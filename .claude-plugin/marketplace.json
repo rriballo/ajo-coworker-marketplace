@@ -1,0 +1,28 @@
+{
+  "name": "adobe-ajo-coworker",
+  "owner": {
+    "name": "WPP AJO Engineering"
+  },
+  "description": "Adobe Journey Optimizer plugins for CX Coworker.",
+  "version": "1.0.0",
+  "plugins": [
+    {
+      "name": "adobe-ajo",
+      "displayName": "Adobe Journey Optimizer",
+      "source": "./plugins/adobe-ajo",
+      "description": "Safely discover and manage Adobe Journey Optimizer Content Library and Decisioning resources through MCP.",
+      "version": "1.0.0",
+      "author": {
+        "name": "WPP AJO Engineering"
+      },
+      "category": "productivity",
+      "tags": [
+        "adobe",
+        "journey-optimizer",
+        "decisioning",
+        "content",
+        "mcp"
+      ]
+    }
+  ]
+}

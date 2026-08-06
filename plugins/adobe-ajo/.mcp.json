@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "adobe-ajo": {
+      "type": "http",
+      "url": "${AJO_MCP_URL}",
+      "headers": {
+        "Authorization": "Bearer ${ADOBE_IMS_TOKEN}",
+        "x-gw-ims-org-id": "${ADOBE_IMS_ORG_ID}"
+      },
+      "timeout": 30000
+    }
+  }
+}
