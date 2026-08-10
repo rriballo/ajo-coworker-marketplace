@@ -19,3 +19,10 @@ Content writes require `AJO_CONTENT_WRITES_ENABLED=true`. Decisioning attachment
 10. Validate item readiness and request separate approval before approving the item again.
 
 The public Content API exposes no fragment delete operation. Never claim that temporary fragments can be automatically cleaned up. AJO visual fragments are not valid Decisioning item references; use expression fragments.
+
+## Email content templates
+
+AJO personalization is not Handlebars. Never put `{{ }}` or `{% %}` syntax in template HTML; the save engine rejects unsupported constructs and placeholder identifiers such as `<POLICY_ID>` even inside HTML comments.
+
+- When the Decision Policy UUID is unknown, save the template with an `<!-- offer -->` marker comment where the offer block should render, and report the template as pending a policy ID.
+- When the user created the Decision Policy in the AJO UI and supplies its real UUID, pass `decisionPolicyId` and `referenceKey` to the create or update template tool; the server injects the valid `{{#each decisionPolicy.<id>.items as |item|}}` block. Never write that block by hand.

@@ -18,7 +18,7 @@ Treat MCP confirmation arguments as operation guards, not evidence of human cons
 ## Build
 
 1. Create and publish required AJO expression fragments through the Content workflow.
-2. Create reusable eligibility rules only when profile constraints are required.
+2. Create reusable eligibility rules only when profile constraints are required. Use only XDM field paths the user confirms exist in the org profile schema. Never invent paths (for example `loyaltyDetails.tier` or `transactionSummary.monthlyAvgSpend`) and never reuse placeholder paths such as `membership.status` without user confirmation. If no valid path is available, pause and ask the user rather than writing a rule with guessed fields.
 3. Create Decisioning items as drafts. Do not embed unvalidated fragment references during item creation.
 4. Attach each published expression fragment to its draft item under a stable key such as `hero`, `body`, or `footer`.
 5. Create collections with validated exact predicates only:
@@ -29,6 +29,10 @@ Treat MCP confirmation arguments as operation guards, not evidence of human cons
 6. Create ranking formulas only when static item priority is insufficient.
 7. Create strategies referencing a collection and optional eligibility rule or formula. Strategies never reference placements.
 8. Create an email placement only when one does not already exist for the intended channel configuration.
+9. Create the email template through the Content workflow with a Decision Policy placeholder, never a fake block:
+   - Without a policy ID: include the `<!-- offer -->` marker comment where the offer block will render. The template saves with a plain comment and the run continues; report the template as pending a policy ID.
+   - With a policy ID: only after the user created the Decision Policy in the AJO UI and supplied its real UUID, pass `decisionPolicyId` and `referenceKey` to the template tool. The server injects the valid `{{#each decisionPolicy.<id>.items as |item|}}` block at save time.
+   - Never hand-write `{{ }}` or `{% %}` syntax. AJO personalization is not Handlebars: `{{#if}}`, `{{else}}`, and placeholder identifiers such as `<POLICY_ID>` are rejected at save even inside HTML comments.
 
 Before each write, show the resource, exact change, references, risk, and confirmation phrase. For updates, retrieve the same resource immediately beforehand and copy its current `metadata.etag`.
 
@@ -38,6 +42,6 @@ Before each write, show the resource, exact change, references, risk, and confir
 2. Validate every item with `ajo_decisioning_validate_item_readiness`.
 3. Obtain a separate explicit approval before approving each item.
 4. Re-read every mutated resource and report its final ID, lifecycle, ETag, and warnings.
-5. Explain that Decision Policy creation, strategy-to-placement binding, simulation, proofing, and activation must be completed in AJO outside this MCP.
+5. Explain that Decision Policy creation, strategy-to-placement binding, simulation, proofing, and activation must be completed in AJO outside this MCP. A template saved with the `<!-- offer -->` marker must be backfilled with `ajo_content_update_email_template` once the real Decision Policy UUID exists.
 
 Never automatically retry an ETag mismatch. Never archive or delete as part of a build workflow.
