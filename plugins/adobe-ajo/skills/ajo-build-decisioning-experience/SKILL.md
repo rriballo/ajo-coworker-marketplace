@@ -1,6 +1,6 @@
 ---
 name: ajo-build-decisioning-experience
-description: Plan and implement an Adobe Journey Optimizer Decisioning experience using fragments, draft items, exact-match collections, eligibility rules, ranking formulas, strategies, and placements. Use for end-to-end offer or decisioning builds.
+description: Plan and implement an Adobe Journey Optimizer Decisioning experience using fragments, draft items, exact-match collections, eligibility rules, ranking formulas, strategies, placements, and decision policies. Use for end-to-end offer or decisioning builds.
 ---
 
 # Build an AJO Decisioning experience
@@ -13,7 +13,9 @@ Treat MCP confirmation arguments as operation guards, not evidence of human cons
 2. Clarify the business objective, channels, content roles, audience logic, item names, dates, ranking behavior, and desired output count.
 3. Discover reusable fragments, rules, items, collections, formulas, strategies, and placements before proposing new resources.
 4. Resolve the configured Decisioning catalog before creating items or collections.
-5. Present an ordered plan listing every proposed write, reference, lifecycle effect, and external AJO step. Do not write until the user approves the plan.
+5. Confirm that Coworker or AJO has already created the target Action campaign or journey. This MCP does not create campaigns or journeys.
+6. Resolve the target campaign message scope with `ajo_campaign_resolve_scope`, using the campaign ID, optional journey ID, and `version: "draft"` (or `"live"` when explicitly requested). If package or message selection is ambiguous, ask for the exact IDs and retry the resolver.
+7. Present an ordered plan listing every proposed write, reference, lifecycle effect, resolved scope, and external AJO step. Do not write until the user approves the plan.
 
 ## Build
 
@@ -29,9 +31,10 @@ Treat MCP confirmation arguments as operation guards, not evidence of human cons
 6. Create ranking formulas only when static item priority is insufficient.
 7. Create strategies referencing a collection and optional eligibility rule or formula. Strategies never reference placements.
 8. Create an email placement only when one does not already exist for the intended channel configuration.
-9. Create the email template through the Content workflow with a Decision Policy placeholder, never a fake block:
+9. Create the Decision Policy with `ajo_decisioning_create_decision_policy`, providing at least one selection strategy and one fallback item, and pass the complete `scope` returned by `ajo_campaign_resolve_scope` unchanged. Then bind it to the email placement by name with `ajo_decisioning_bind_decision_policy_placement`, passing the same exact scope (resolve the name from `ajo_decisioning_list_placements`). Record the returned policy UUID; the campaigns service does not expose policy listing or deletion, and a policy cannot be reused across campaign message scopes.
+10. Create the email template through the Content workflow with a Decision Policy placeholder, never a fake block. Build a complete responsive document per the email structure guidance (preheader, header, hero, varied body blocks such as cards, split sections, and voucher cards, and a footer with unsubscribe), and place one `<!-- offer -->` marker where the selected offers should render:
    - Without a policy ID: include the `<!-- offer -->` marker comment where the offer block will render. The template saves with a plain comment and the run continues; report the template as pending a policy ID.
-   - With a policy ID: only after the user created the Decision Policy in the AJO UI and supplied its real UUID, pass `decisionPolicyId` and `referenceKey` to the template tool. The server injects the valid `{{#each decisionPolicy.<id>.items as |item|}}` block at save time.
+   - With a policy ID: after the Decision Policy exists and its real UUID is known, pass `decisionPolicyId`, the exact bound `placementName`, and `referenceKey` to the template tool. The server injects the valid placement-scoped `{{#each decisionPolicy.<id>.placement.<placementName>.items as |item|}}` block at save time.
    - Never hand-write `{{ }}` or `{% %}` syntax. AJO personalization is not Handlebars: `{{#if}}`, `{{else}}`, and placeholder identifiers such as `<POLICY_ID>` are rejected at save even inside HTML comments.
 
 Before each write, show the resource, exact change, references, risk, and confirmation phrase. For updates, retrieve the same resource immediately beforehand and copy its current `metadata.etag`.
@@ -42,6 +45,6 @@ Before each write, show the resource, exact change, references, risk, and confir
 2. Validate every item with `ajo_decisioning_validate_item_readiness`.
 3. Obtain a separate explicit approval before approving each item.
 4. Re-read every mutated resource and report its final ID, lifecycle, ETag, and warnings.
-5. Explain that Decision Policy creation, strategy-to-placement binding, simulation, proofing, and activation must be completed in AJO outside this MCP. A template saved with the `<!-- offer -->` marker must be backfilled with `ajo_content_update_email_template` once the real Decision Policy UUID exists.
+5. Re-read every mutated resource and report its final ID, lifecycle, ETag, and warnings. Explain that simulation, proofing, and activation must be completed in AJO outside this MCP. A template saved with the `<!-- offer -->` marker must be backfilled with `ajo_content_update_email_template` once the real Decision Policy UUID exists (from `ajo_decisioning_create_decision_policy`).
 
 Never automatically retry an ETag mismatch. Never archive or delete as part of a build workflow.

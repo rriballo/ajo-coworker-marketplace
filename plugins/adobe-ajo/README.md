@@ -14,7 +14,7 @@ Start a new task by asking Coworker to call `ajo_get_capabilities`. For an end-t
 
 ## Product Boundaries
 
-The MCP can manage supported Content Library expression fragments and Decisioning persistence resources. Decision Policy authoring, placement binding, profile simulation, proofing, and journey or campaign activation remain in Adobe Journey Optimizer.
+The MCP can manage supported Content Library expression fragments, Decisioning persistence resources, resolve Action campaign message scope, and create Decision Policies with placement binding. Campaign or journey creation, profile simulation, proofing, and activation remain in Adobe Journey Optimizer or Coworker campaign workflows.
 
 ## Connection
 

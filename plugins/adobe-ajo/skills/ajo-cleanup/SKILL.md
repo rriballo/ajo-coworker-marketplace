@@ -10,7 +10,7 @@ This is a destructive, manual-only workflow. Do not infer deletion intent from p
 
 1. Inventory every target with read tools and show names, IDs, lifecycle state, and current ETags.
 2. Inspect dependencies visible through the Decisioning persistence API.
-3. Warn that campaign and journey Decision Policy references are not visible to this server. Require the user to verify and remove those references in AJO.
+3. Warn that campaign and journey Decision Policy references are not fully visible to this server. Require the user to verify and remove those references in AJO before deleting dependent Decisioning resources. If the user supplies an Action campaign ID, use `ajo_campaign_resolve_scope` only to identify its message scope; it does not enumerate policy references.
 4. Present a cleanup plan in reverse dependency order:
    - Strategies.
    - Collections.

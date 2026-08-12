@@ -15,6 +15,7 @@ Use only read-only AJO MCP operations during this workflow.
 6. For an item, use `ajo_decisioning_validate_item_readiness` when the user asks whether it can be approved or delivered.
 7. Distinguish draft resource state from published/live state for Content fragments.
 8. For an email template, report whether its HTML still contains the pending `<!-- offer -->` marker (no Decision Policy block yet) or an injected policy block.
-9. Return a concise inventory with resource names, IDs, lifecycle state, relationships, missing dependencies, and recommended next reads.
+9. When the user provides an Action campaign ID, use `ajo_campaign_resolve_scope` to resolve its draft or live `versionId`, email `packageId`, and `messageId`. Supply a journey ID when available so campaign ownership is verified. If selection is ambiguous, request exact package/message IDs rather than guessing.
+10. Return a concise inventory with resource names, IDs, lifecycle state, relationships, missing dependencies, resolved campaign scope, and recommended next reads.
 
 Do not create, update, publish, approve, archive, or delete resources in this skill. If the user requests a change, present the findings first and move to the appropriate write-oriented skill only after explicit approval.
