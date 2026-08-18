@@ -14,7 +14,7 @@ Treat MCP confirmation arguments as operation guards, not evidence of human cons
 3. Discover reusable fragments, rules, items, collections, formulas, strategies, placements, and relevant AEP audience definitions before proposing new resources. Use `ajo_aep_get_audience` with the list response's system `id`; an existing audience's stored PQL can inform requirements but must not be copied into a Decisioning rule without confirming every XDM path.
 4. Resolve the configured Decisioning catalog before creating items or collections.
 5. Confirm that Coworker or AJO has already created the target Action campaign or journey. This MCP does not create campaigns or journeys.
-6. Ask Coworker for the Action `campaignVersionId` and associated `journeyVersionId`, not only root campaign or journey IDs. Resolve the target message scope with `ajo_campaign_resolve_scope` using those version IDs. Root IDs remain a compatibility fallback. If package or message selection is ambiguous, ask for the exact IDs and retry the resolver.
+6. If only a Journey ID is known, call `ajo_journey_resolve_campaigns` and require an exact action-node or root-campaign selection when multiple campaigns are returned. Then ask Coworker for the selected Action `campaignVersionId` when it is not present in the Journey result. Resolve the target message scope with `ajo_campaign_resolve_scope`; root IDs remain a compatibility fallback. If package or message selection is ambiguous, ask for the exact IDs and retry the resolver.
 7. Present an ordered plan listing every proposed write, reference, lifecycle effect, resolved scope, and external AJO step. Do not write until the user approves the plan.
 
 ## Build
@@ -46,6 +46,6 @@ Before each write, show the resource, exact change, references, risk, and confir
 3. Obtain a separate explicit approval before approving each item.
 4. Re-read every mutated resource and report its final ID, lifecycle, ETag, and warnings.
 5. Re-read every mutated resource and report its final ID, lifecycle, ETag, and warnings. A template saved with the `<!-- offer -->` marker must be backfilled with `ajo_content_update_email_template` once the real Decision Policy UUID exists (from `ajo_decisioning_create_decision_policy`).
-6. After content is assembled and a root Action/API-triggered campaign ID plus test profile are available, call `ajo_campaign_preview_content` and report every rendered variant, subject, and HTML result. Preview requires the inbound user token and Manage Simulate Content permission; it does not support Orchestrated campaigns or prove profile eligibility/delivery. Proofing and activation remain external AJO steps.
+6. After content is assembled, resolve the Journey first with `ajo_journey_resolve_campaigns` when a root campaign ID is not already known. Never choose silently when `selectionRequired` is true. With one selected root Action/API-triggered campaign ID plus a test profile, call `ajo_campaign_preview_content` and report every rendered variant, subject, and HTML result. This renders the Journey action message but does not simulate the Journey path, branching, waits, events, consent, eligibility, proof, or delivery. Full Journey Simulation, proofing, and activation remain external AJO steps.
 
 Never automatically retry an ETag mismatch. Never archive or delete as part of a build workflow.
