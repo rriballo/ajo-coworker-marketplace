@@ -16,6 +16,7 @@ Decision Policy writes target one exact DRAFT Action campaign email message. A J
 3. A positive `actionCount` with zero associations means metadata is unavailable, not that no action exists. Ask for the Action `campaignVersionId` and resolve it directly.
 4. If multiple associations exist, require an exact candidate selection. Never choose silently.
 5. Pass the selected `campaignVersionId` to `ajo_campaign_resolve_scope`.
+6. Pass the returned `data.scope` unchanged to Decision Policy create and bind tools. For Journey-inline email actions, `scope.campaignId` can be a composite string; it is valid scope metadata but must not be used as a root campaign lookup or Simulation ID.
 
 Never substitute a Journey ID, Journey version ID, node ID, action UID, package ID, message ID, or template ID for a campaign ID or campaign version ID. `journeyVersionId` is metadata only.
 
