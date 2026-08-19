@@ -1,20 +1,36 @@
 # Adobe Journey Optimizer Plugin
 
-This plugin connects CX Coworker to the remote `adobe-ajo-mcp` server and provides workflow skills above its atomic MCP tools.
+This plugin connects CX Coworker to the remote AJO MCP server and provides safe workflow skills above its atomic tools.
+
+## Fixed Environment
+
+All skills target only the `aepenablementfy21` sandbox. A conflicting sandbox value is a stop condition, not a prompt to select another environment.
+
+## Skills
+
+- `ajo-discover`: read-only inventories, exact lookup, relationships, and ID resolution.
+- `ajo-build-decisioning-experience`: coordinated end-to-end Decisioning build with a late policy commit point.
+- `ajo-manage-expression-fragments`: expression-fragment authoring, publication, and optional item attachment.
+- `ajo-author-email-template`: complete email Content Template authoring and source QA.
+- `ajo-audit-decisioning`: read-only Decisioning dependency/readiness audit.
+- `ajo-audit-message-readiness`: read-only template, campaign preview, and audience-definition evidence.
+- `ajo-cleanup`: explicit manual-only destructive cleanup.
+
+Shared references define campaign scope resolution, audience reads, email standards, write recovery, and operation receipts.
 
 ## Operating Model
 
-- MCP tools perform typed, independently guarded Adobe API operations.
-- Skills teach Coworker how to discover and sequence those operations.
-- Every write requires an enabled server-side write gate, an intent summary, and explicit human approval.
-- Updates and destructive operations require a fresh ETag from the same resource.
+- Skills call `ajo_get_capabilities`, enforce the fixed sandbox, and verify server write gates.
+- Plan approval is not mutation approval. Every exact write requires fresh human approval.
+- Updates, lifecycle changes, attachments, archives, and deletes use a fresh ETag from the same resource.
+- Create timeouts and unknown asynchronous outcomes stop for reconciliation; non-idempotent operations are never retried blindly.
+- Decision Policies support multiple selection strategies, optional manually pinned items, multiple approved fallback items, and an output count. The current tool requires at least one strategy and one fallback.
+- A Journey is discovery context. Policy writes use one exact DRAFT Action campaign message scope returned by `ajo_campaign_resolve_scope`.
 - The plugin never stores Adobe credentials.
-
-Start a new task by asking Coworker to call `ajo_get_capabilities`. For an end-to-end implementation, invoke the `ajo-build-decisioning-experience` skill. Use `ajo-cleanup` only through an explicit user invocation.
 
 ## Product Boundaries
 
-The MCP can manage supported Content Library expression fragments, Decisioning persistence resources, resolve Action campaign message scope, and create Decision Policies with placement binding. Campaign or journey creation, profile simulation, proofing, and activation remain in Adobe Journey Optimizer or Coworker campaign workflows.
+The MCP manages supported Content Library resources and Decisioning resources, resolves Action campaign message scope, creates Decision Policies, and binds placements. Campaign/Journey creation, copied Journey-message HTML retrieval, full Journey Simulation, proofing, and activation remain external AJO steps.
 
 ## Connection
 
@@ -27,4 +43,4 @@ Authorization: Bearer ${ADOBE_IMS_TOKEN}
 x-gw-ims-org-id: ${ADOBE_IMS_ORG_ID}
 ```
 
-Replace the short-lived IMS user token when the server returns `401`. A missing organization header also results in `401` at the Adobe Runtime gateway.
+Replace the short-lived IMS user token after `401`. A missing organization header also causes authorization failure at the Adobe Runtime gateway.

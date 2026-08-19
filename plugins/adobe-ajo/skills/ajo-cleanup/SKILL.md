@@ -1,26 +1,31 @@
 ---
 name: ajo-cleanup
-description: Plan and execute explicitly requested destructive cleanup of Adobe Journey Optimizer Decisioning resources in safe reverse dependency order. Never invoke automatically.
+description: Plan and execute explicitly requested destructive cleanup of exact Adobe Journey Optimizer Decisioning resources in reverse dependency order. Never invoke automatically or interpret tidy, replace, start over, or remove duplicates as deletion consent.
 disable-model-invocation: true
 ---
 
 # Clean up AJO Decisioning resources
 
-This is a destructive, manual-only workflow. Do not infer deletion intent from phrases such as “tidy,” “replace,” “start over,” or “remove duplicates.” Require the user to identify the exact resources they want removed.
+This is a destructive, manual-only workflow. Follow `../../references/write-safety-and-recovery.md` and `../../references/operation-manifest-and-output.md`. The sandbox is fixed to `aepenablementfy21`.
 
-1. Inventory every target with read tools and show names, IDs, lifecycle state, and current ETags.
-2. Inspect dependencies visible through the Decisioning persistence API.
-3. Warn that campaign and journey Decision Policy references are not fully visible to this server. Require the user to verify and remove those references in AJO before deleting dependent Decisioning resources. If the user supplies an Action campaign ID, use `ajo_campaign_resolve_scope` only to identify its message scope; it does not enumerate policy references.
-4. Present a cleanup plan in reverse dependency order:
-   - Strategies.
-   - Collections.
-   - Ranking formulas and eligibility rules.
-   - Items.
-5. Explain that placements have no documented delete tool and Content fragments cannot be deleted through the public Content API.
-6. Obtain explicit human approval separately for every archive or delete operation.
-7. Immediately before each mutation, retrieve the same resource and copy its fresh `metadata.etag`.
-8. Supply the exact confirmation phrase required by that tool only after approval.
-9. Stop on ETag mismatch, incomplete dependency scanning, unknown references, or any unexpected upstream response. Never retry automatically.
-10. Re-read or relist after every mutation and produce an audit summary of completed, blocked, and externally required actions.
+## Required inputs
 
-Archival is irreversible. Never archive as a substitute for a failed delete unless the user explicitly approves archival after understanding that consequence.
+Require immutable IDs for every requested target, explicit deletion/archive intent, and external verification of campaign/Journey policy references when relevant. Names alone are insufficient.
+
+## Workflow
+
+1. Call `ajo_get_capabilities`; verify the Decisioning write gate and fixed sandbox.
+2. Inventory targets with `ajo_decisioning_list_items`, `ajo_decisioning_list_rules`, `ajo_decisioning_list_collections`, `ajo_decisioning_list_ranking_formulas`, `ajo_decisioning_list_strategies`, and `ajo_decisioning_list_placements`, followed by exact gets. Show name, ID, lifecycle, configuration, references, and ETag.
+3. Inspect visible dependencies. Warn that campaign/Journey Decision Policy references are not fully visible. Require recorded user attestation or external AJO verification that those references were removed.
+4. If an Action campaign version ID is supplied, use `ajo_campaign_resolve_scope` only to identify message scope; it does not enumerate policy references.
+5. Present reverse dependency order: strategies, collections, formulas/rules, then items. Placements have no delete tool and Content fragments cannot be deleted through the public API.
+6. Before every archive/delete, fresh-get the exact resource, show its current state and ETag, and obtain separate approval.
+7. Execute one mutation, then re-read/relist before continuing. Stop if new shared dependencies appear.
+
+## Resume and unknown outcomes
+
+- Already absent after exact verification is an idempotent completed state.
+- A transport failure or unknown delete outcome is not absence. Stop and reconcile before continuing or retrying.
+- Never archive as a substitute for failed deletion without new explicit approval and acknowledgement that archival is irreversible.
+
+Return a ledger of completed, already absent, blocked, outcome-unknown, and externally required actions.

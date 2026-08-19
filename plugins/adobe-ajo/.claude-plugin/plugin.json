@@ -1,8 +1,8 @@
 {
   "name": "adobe-ajo",
   "displayName": "Adobe Journey Optimizer",
-  "description": "Safely discover, plan, audit, and manage Adobe Journey Optimizer Content Library and Decisioning resources.",
-  "version": "1.0.0",
+  "description": "Safely discover, build, author, audit, and clean up Adobe Journey Optimizer Content Library and Decisioning resources.",
+  "version": "2.0.0",
   "author": {
     "name": "WPP AJO Engineering"
   },
@@ -11,6 +11,7 @@
     "adobe",
     "ajo",
     "decisioning",
+    "content-templates",
     "content-fragments",
     "mcp"
   ]

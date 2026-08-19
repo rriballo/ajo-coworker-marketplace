@@ -1,28 +1,30 @@
 ---
 name: ajo-audit-decisioning
-description: Audit Adobe Journey Optimizer Decisioning items, collections, strategies, rules, formulas, placements, and fragment references for readiness and configuration problems. This workflow is read-only.
+description: Read-only readiness and configuration audit of Adobe Journey Optimizer Decisioning items, collections, strategies, eligibility rules, formulas, placements, and expression-fragment references. Use for evidence-based Decisioning findings. Do not use for general inventory, message/template QA, mutations, or cleanup.
 ---
 
 # Audit AJO Decisioning configuration
 
-Remain read-only. Do not repair findings during the audit.
+Remain read-only. The sandbox is fixed to `aepenablementfy21`; stop on mismatch.
 
-1. Call `ajo_get_capabilities` and identify the audit scope.
-2. Inventory the relevant resources and follow pagination to avoid incomplete conclusions.
-3. Re-read individual resources before reporting detailed fields or ETags.
-4. Validate item readiness and separate:
-   - Structural readiness for approval.
-   - Current approval status.
-   - Current date-window eligibility.
-   - Delivery limitations that cannot be simulated.
-5. Inspect strategy dependencies and verify collection, eligibility-rule, and ranking-formula references.
-6. Review collection filters for supported exact `equals`, `in`, `and`, and `or` semantics.
-7. For content references, verify the fragment is an expression fragment, publication completed, and live content is available.
-8. If a target Action campaign version ID is supplied, resolve its message scope directly with `ajo_campaign_resolve_scope`; optionally supply the root `journeyId` for ownership verification and report the exact version, package, and message IDs. `journeyVersionId` is metadata only. Never substitute Journey, Journey-version, node, or action IDs for campaign identifiers.
-9. When audience targeting is in scope, retrieve the AEP audience definition by system `id` and report its stored expression, schema, merge policy, evaluation mode, origin, lifecycle, labels, and dependencies. Do not expose or infer members.
-10. When a saved Content Template ID is supplied or recorded, use `ajo_content_get_template` to audit normalized subject, HTML, text, headers, source shape, ETag, and the pending marker or injected policy block. State that this is the stored source template; applying it to a Journey message creates a copy and later Journey-side edits are not represented.
-11. If only a Journey ID is supplied, use `ajo_journey_resolve_campaigns` to report its campaign action nodes. Distinguish `actionCount` from `associationCount`: a positive action count with zero associations means Adobe omitted campaign metadata, not that no action exists. Request a known `campaignVersionId` and resolve it directly when necessary. Require exact selection when multiple resolved actions exist. This tool does not retrieve Journey-inline HTML. Use `ajo_campaign_preview_content` only when the resolver returns `simulationPreview.supported: true` with a non-null `previewCampaignId` and a test profile is available. Treat saved-template QA and personalized rendering as different evidence, neither of which proves Journey execution, audience qualification, or delivery.
-12. Identify duplicate or apparently reusable resources, but do not assume matching names are semantically equivalent.
-13. Report findings by severity with resource type, name, ID, evidence, impact, and recommended next action.
+## Inputs and scope
 
-State these blind spots in the report: saved Content Template QA does not include later edits made to a copied Journey message, while supported campaign preview returns profile-rendered content; neither simulates Journey paths, branching, waits, events, consent, profile eligibility, proofs, or delivery. Full Journey Simulation remains in the AJO UI. Audience reads do not return members or estimates; the MCP cannot retrieve Journey-inline message HTML, inspect every campaign or journey policy reference after binding, send proofs, create campaigns or journeys, or activate them. It can author Decision Policies and bind placements when a valid campaign message scope has been resolved.
+Require resource IDs, naming scope, or exact campaign version context sufficient to bound the audit. State exclusions before broad conclusions.
+
+## Workflow
+
+1. Call `ajo_get_capabilities`.
+2. Inventory with `ajo_decisioning_list_items`, `ajo_decisioning_list_rules`, `ajo_decisioning_list_collections`, `ajo_decisioning_list_ranking_formulas`, `ajo_decisioning_list_strategies`, and `ajo_decisioning_list_placements`; follow pagination.
+3. Exact-get resources before reporting detailed fields or ETags.
+4. Validate item readiness and distinguish structural readiness, approval state, date-window eligibility, and unsimulated delivery eligibility.
+5. Inspect every in-scope strategy and verify collection, rule, formula, ranking, and candidate-item dependencies.
+6. Verify collection filters use supported exact `equals`, `in`, `and`, or `or` semantics.
+7. For content references, verify expression-fragment type, completed publication, live content, and stable reference keys.
+8. When policy scope evidence is needed, follow `../../references/campaign-scope-resolution.md`. The API cannot list/delete policies or enumerate every invisible campaign/Journey reference.
+9. Identify duplicate/reusable candidates, but compare semantics and never infer equivalence from names.
+
+## Output
+
+Report findings first, ordered by severity. For each finding include resource type, name, ID, evidence, impact, and recommended next action. Then list confirmed strengths, blind spots, and testing gaps.
+
+Do not repair findings. Message source, audience, and personalized preview checks belong to `ajo-audit-message-readiness`.

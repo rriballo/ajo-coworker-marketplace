@@ -2,6 +2,8 @@
 
 CX Coworker marketplace for the Adobe Journey Optimizer MCP integration.
 
+Version 2 separates fragment and email authoring, adds message-readiness auditing, enforces the fixed `aepenablementfy21` sandbox, and introduces shared write-recovery and campaign-scope contracts.
+
 ## Configuration
 
 Provide these values through the host environment or managed secret configuration:
