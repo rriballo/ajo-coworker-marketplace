@@ -24,6 +24,9 @@ The public Content API exposes no fragment delete operation. Never claim that te
 
 AJO personalization is not Handlebars. Never put `{{ }}` or `{% %}` syntax in template HTML; the save engine rejects unsupported constructs and placeholder identifiers such as `<POLICY_ID>` even inside HTML comments.
 
+- Create and save reusable email content as an AJO Content Template before applying it to a Journey message. Record the returned template ID as the QA source of record.
+- Re-read that exact ID with `ajo_content_get_template`. Inspect `data.qa.subject`, `data.qa.html`, `data.qa.text`, `data.qa.headers`, and `data.qa.sourceShape`, while retaining the original Adobe response and ETag for evidence.
+- Apply the reviewed template in the AJO UI only after source QA passes. Applying it creates a copy in the Journey message; later Journey-side edits do not sync back to the stored template and require separate UI validation or a newly saved template version.
 - When the Decision Policy UUID is unknown, save the template with an `<!-- offer -->` marker comment where the offer block should render, and report the template as pending a policy ID.
 - When the user created the Decision Policy in the AJO UI and supplies its real UUID, pass `decisionPolicyId`, the exact bound `placementName`, and `referenceKey` to the create or update template tool; the server injects the valid placement-scoped `{{#each decisionPolicy.<id>.placement.<placementName>.items as |item|}}` block. Never write that block by hand.
 - When the policy was created through this MCP, use the policy UUID and placement name returned by the policy workflow. The template tool does not resolve campaign scope; the policy must already be bound to the placement in the target campaign message.
