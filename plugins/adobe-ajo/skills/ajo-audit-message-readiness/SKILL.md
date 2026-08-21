@@ -17,7 +17,7 @@ Remain read-only. The sandbox is fixed to `aepenablementfy21`; stop on mismatch.
 
 1. Call `ajo_get_capabilities`.
 2. Retrieve the exact template and audit it against `../../references/email-template-standard.md`: normalized subject/HTML/text/headers, ETag, source shape, placeholders, marker/generated policy block, links/assets, accessibility, responsive structure, and supplied footer content.
-3. Resolve campaign/Journey evidence according to `../../references/campaign-scope-resolution.md`. Distinguish action nodes from embedded associations and never claim a positive `actionCount` with zero associations means no action.
+3. Resolve campaign/Journey evidence according to `../../references/campaign-scope-resolution.md`. Distinguish action nodes from embedded or recovered associations, report the recovery status and candidates, and never claim a positive `actionCount` with zero associations means no action.
 4. If a supported preview is requested, require `simulationPreview.supported`, its non-null `previewCampaignId`, the inbound user token/permission, and one to ten approved test identities. Redact sensitive rendered values.
 5. If audience context is requested, follow `../../references/audience-read-contract.md` and report definitions only.
 6. Separate each evidence class: stored template source, campaign-rendered preview, audience definition, campaign scope, and external AJO UI state.

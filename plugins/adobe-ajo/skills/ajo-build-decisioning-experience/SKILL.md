@@ -21,7 +21,7 @@ The sandbox is always `aepenablementfy21`. Stop on any mismatch.
 2. Resolve the Decisioning catalog.
 3. Inventory reusable resources with `ajo_decisioning_list_items`, `ajo_decisioning_list_rules`, `ajo_decisioning_list_collections`, `ajo_decisioning_list_ranking_formulas`, `ajo_decisioning_list_strategies`, and `ajo_decisioning_list_placements`, plus relevant Content reads. Follow pagination.
 4. If audience context is needed, follow `../../references/audience-read-contract.md`. Never convert stored PQL into a rule until every XDM field is confirmed by the user.
-5. Resolve the exact DRAFT campaign message scope. Campaign/Journey creation remains external.
+5. Resolve the exact DRAFT campaign message scope. With only a root Journey ID, require `ajo_journey_resolve_campaigns` to attempt automatic source-metadata recovery, inspect `recovery` and `selectionRequired`, select one exact returned `campaignVersionId`, then call `ajo_campaign_resolve_scope`. Ask the user for a version ID only after recovery has no exact match. Campaign/Journey creation remains external.
 6. Create the operation manifest, including deterministic names, semantic reuse comparisons, dependencies, policy composition, scope, and external steps.
 7. Present the ordered plan. Plan approval does not authorize any write.
 

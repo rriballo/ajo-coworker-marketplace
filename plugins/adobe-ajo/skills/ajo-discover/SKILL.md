@@ -24,6 +24,6 @@ description: Read-only inventory, lookup, and relationship discovery for Adobe J
 
 ## Stop and handoff
 
-Stop on sandbox mismatch, ambiguous selection, incomplete pagination, unavailable embedded campaign metadata, or conflicting IDs. Return a concise inventory and recommend the next read or destination skill.
+Stop on sandbox mismatch, unresolved recovery ambiguity, incomplete pagination, or conflicting IDs. Do not stop merely because embedded campaign metadata is unavailable; `ajo_journey_resolve_campaigns` must attempt exact Campaign Service recovery first. Return a concise inventory and recommend the next read or destination skill.
 
 Do not create, update, publish, approve, archive, bind, or delete. Discovery approval never authorizes a later mutation; the destination skill must preflight and request fresh approval.
