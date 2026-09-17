@@ -9,7 +9,7 @@ Follow `../../references/write-safety-and-recovery.md`, `../../references/operat
 
 ## Required inputs
 
-- Business objective, channel, supplied offer facts/content, item names, date windows, output count, ranking and eligibility requirements.
+- Business objective, channel, supplied offer facts/content, item names, date windows, output count, ranking requirements, and one eligibility mode per item/strategy: unrestricted, raw PQL rule, existing rule, or audience-backed rule.
 - Target Action `campaignVersionId`, or a root Journey/campaign identifier from which it can be resolved.
 - Decision Policy composition: one to thirty selection strategies, zero to thirty manual item IDs, one to thirty approved fallback item IDs, and an `itemCount` from one to thirty. The current MCP requires at least one strategy and one fallback.
 
@@ -20,7 +20,7 @@ The sandbox is always `aepenablementfy21`. Stop on any mismatch.
 1. Call `ajo_get_capabilities`; verify both required write gates and state the fixed sandbox.
 2. Resolve the Decisioning catalog.
 3. Inventory reusable resources with `ajo_decisioning_list_items`, `ajo_decisioning_list_rules`, `ajo_decisioning_list_collections`, `ajo_decisioning_list_ranking_formulas`, `ajo_decisioning_list_strategies`, and `ajo_decisioning_list_placements`, plus relevant Content reads. Follow pagination.
-4. If audience context is needed, follow `../../references/audience-read-contract.md`. Never convert stored PQL into a rule until every XDM field is confirmed by the user.
+4. If audience eligibility is needed, follow `../../references/audience-read-contract.md`: list and exact-get every `data.children[].id`, choose explicit AND/OR, and never use names, `audienceId`, or copied stored PQL.
 5. Resolve the exact DRAFT campaign message scope. With only a root Journey ID, require `ajo_journey_resolve_campaigns` to attempt automatic source-metadata recovery, inspect `recovery` and `selectionRequired`, select one exact returned `campaignVersionId`, then call `ajo_campaign_resolve_scope`. Ask the user for a version ID only after recovery has no exact match. Campaign/Journey creation remains external.
 6. Create the operation manifest, including deterministic names, semantic reuse comparisons, dependencies, policy composition, scope, and external steps.
 7. Present the ordered plan. Plan approval does not authorize any write.
@@ -30,8 +30,8 @@ The sandbox is always `aepenablementfy21`. Stop on any mismatch.
 For every mutation, present the exact payload and obtain separate approval.
 
 1. Create and publish required expression fragments through `ajo-manage-expression-fragments`.
-2. Create eligibility rules only when required and only with user-confirmed XDM paths. Never guess paths or reuse placeholder paths such as `membership.status` without confirmation.
-3. Create items as drafts, then attach published expression fragments under stable reference keys using fresh item ETags.
+2. Create an eligibility rule only when required. For raw PQL, use only user-confirmed XDM paths; never guess paths or reuse placeholders such as `membership.status`. For audience eligibility, call `ajo_decisioning_create_rule` with `audienceEligibility` containing exact verified system IDs and an explicit AND/OR operator. Never supply both modes. Confirm the result reports `stored: true` and exact persisted PQL; report `visualEditorCompatible` separately. Rule creation never attaches it.
+3. Obtain a separate approval to create the draft item with the verified `eligibilityRuleId`, or fresh-get and separately approve an item update. Require the resulting exact item read to report `eligibilityRuleAttached: true`. Then attach published expression fragments under stable reference keys using fresh item ETags.
 4. Create exact-match collections using only validated `equals`, `in`, `and`, and `or` filters. Wildcards, partial matching, and `$contains` are unsupported.
 5. Create ranking formulas only when static priority is insufficient.
 6. Create each strategy with an exact collection and optional confirmed rule/formula. Strategies never contain placements.

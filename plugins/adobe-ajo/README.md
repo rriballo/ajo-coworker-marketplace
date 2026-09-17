@@ -25,6 +25,7 @@ Shared references define campaign scope resolution, audience reads, email standa
 - Updates, lifecycle changes, attachments, archives, and deletes use a fresh ETag from the same resource.
 - Create timeouts and unknown asynchronous outcomes stop for reconciliation; non-idempotent operations are never retried blindly.
 - Decision Policies support multiple selection strategies, optional manually pinned items, multiple approved fallback items, and an output count. The current tool requires at least one strategy and one fallback.
+- Eligibility is explicit: unrestricted, a raw-PQL rule using confirmed XDM fields, or an audience-backed rule using exact AEP system IDs and AND/OR. Rule creation and item/strategy attachment are separate approved writes, each followed by an exact read.
 - A Journey is discovery context. Policy writes use one exact DRAFT Action campaign message scope returned by `ajo_campaign_resolve_scope`.
 - The plugin never stores Adobe credentials.
 

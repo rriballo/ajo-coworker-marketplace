@@ -19,7 +19,7 @@ description: Read-only inventory, lookup, and relationship discovery for Adobe J
 5. Distinguish fragment draft, publication status, and live content. A visual fragment is not a valid Decisioning item content reference.
 6. For template source, list only when the ID is unknown, then call `ajo_content_get_template` and report normalized `data.qa` fields, marker/policy-block state, and ETag.
 7. Resolve Journey and campaign identifiers according to `../../references/campaign-scope-resolution.md`.
-8. Read audience definitions according to `../../references/audience-read-contract.md`.
+8. Read audience definitions according to `../../references/audience-read-contract.md`. When explaining item or strategy eligibility, distinguish the audience definition from the persisted eligibility rule that uses `inSegment`, and verify the target's exact `eligibilityRule` reference. Do not claim a rule is attached merely because it exists.
 9. Present candidate resources with exact ID, lifecycle, normalized configuration, references, scope, and meaningful differences. A name match is not semantic equivalence.
 
 ## Stop and handoff
