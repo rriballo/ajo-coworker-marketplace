@@ -11,6 +11,7 @@ All skills target only the `aepenablementfy21` sandbox. A conflicting sandbox va
 - `ajo-discover`: read-only inventories, exact lookup, relationships, and ID resolution.
 - `ajo-author-eligibility-rule`: Profile-schema-backed structured eligibility, audience rules, advanced raw-PQL diagnostics, and persisted-rule verification.
 - `ajo-build-decisioning-experience`: coordinated end-to-end Decisioning build with a late policy commit point.
+- `ajo-manage-decision-item`: incremental item creation, existing-chain onboarding, metadata/content maintenance, readiness, and lifecycle approval without rebuilding upstream resources.
 - `ajo-manage-expression-fragments`: expression-fragment authoring, publication, and optional item attachment.
 - `ajo-author-email-template`: complete email Content Template authoring and source QA.
 - `ajo-audit-decisioning`: read-only Decisioning dependency/readiness audit.

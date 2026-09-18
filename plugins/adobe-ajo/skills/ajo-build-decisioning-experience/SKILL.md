@@ -1,11 +1,13 @@
 ---
 name: ajo-build-decisioning-experience
-description: Plan and execute an end-to-end Adobe Journey Optimizer Decisioning build with fragments, items, rules, collections, formulas, strategies, placements, a campaign-scoped Decision Policy, and an email Content Template. Use for coordinated offer builds. Do not use for isolated content edits, read-only audits, cleanup, campaign/Journey creation, proofs, or activation.
+description: Plan and execute an end-to-end Adobe Journey Optimizer Decisioning build with fragments, items, rules, collections, formulas, strategies, placements, a campaign-scoped Decision Policy, and an email Content Template. Use for coordinated offer builds. Do not use for isolated item or content changes, read-only audits, cleanup, campaign/Journey creation, proofs, or activation.
 ---
 
 # Build an AJO Decisioning experience
 
 Follow `../../references/write-safety-and-recovery.md`, `../../references/operation-manifest-and-output.md`, and `../../references/campaign-scope-resolution.md`. Delegate detailed fragment and template work to their focused skills.
+
+Use `ajo-manage-decision-item` instead when adding or maintaining an item in an existing collection, strategy, placement, and policy chain. Do not rebuild an established chain for an item-only request.
 
 ## Required inputs
 
