@@ -13,14 +13,15 @@ description: Read-only inventory, lookup, and relationship discovery for Adobe J
 ## Workflow
 
 1. Call `ajo_get_capabilities` when current server guidance is unavailable.
-2. Inventory with the exact relevant tools and follow Adobe pagination: `ajo_decisioning_list_items`, `ajo_decisioning_list_rules`, `ajo_decisioning_list_collections`, `ajo_decisioning_list_ranking_formulas`, `ajo_decisioning_list_strategies`, `ajo_decisioning_list_placements`, `ajo_content_list_fragments`, `ajo_content_list_templates`, or `ajo_aep_list_audiences`.
+2. Inventory with the exact relevant tools and follow Adobe pagination: `ajo_decisioning_list_items`, `ajo_decisioning_list_rules`, `ajo_decisioning_list_collections`, `ajo_decisioning_list_ranking_formulas`, `ajo_decisioning_list_strategies`, `ajo_decisioning_list_placements`, `ajo_content_list_fragments`, `ajo_content_list_templates`, `ajo_aep_list_audiences`, or `ajo_aep_list_profile_schemas`.
 3. Use the matching exact `get` tool before reporting full configuration, content, lifecycle, or ETag. Never invent filters or IDs.
 4. For strategies, call `ajo_decisioning_inspect_strategy` to explain collection, eligibility-rule, and ranking dependencies.
 5. Distinguish fragment draft, publication status, and live content. A visual fragment is not a valid Decisioning item content reference.
 6. For template source, list only when the ID is unknown, then call `ajo_content_get_template` and report normalized `data.qa` fields, marker/policy-block state, and ETag.
 7. Resolve Journey and campaign identifiers according to `../../references/campaign-scope-resolution.md`.
 8. Read audience definitions according to `../../references/audience-read-contract.md`. When explaining item or strategy eligibility, distinguish the audience definition from the persisted eligibility rule that uses `inSegment`, and verify the target's exact `eligibilityRule` reference. Do not claim a rule is attached merely because it exists.
-9. Present candidate resources with exact ID, lifecycle, normalized configuration, references, scope, and meaningful differences. A name match is not semantic equivalence.
+9. For Profile-field questions, exact-get one Profile schema and search its normalized fields. Do not use `ajo_decisioning_inspect_schema`, which is the Offer Item schema, as Profile evidence. Use `ajo_decisioning_verify_rule` to distinguish persisted PQL from visual-model, attachment, and simulation evidence.
+10. Present candidate resources with exact ID, lifecycle, normalized configuration, references, scope, and meaningful differences. A name match is not semantic equivalence.
 
 ## Stop and handoff
 

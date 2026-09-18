@@ -9,6 +9,7 @@ All skills target only the `aepenablementfy21` sandbox. A conflicting sandbox va
 ## Skills
 
 - `ajo-discover`: read-only inventories, exact lookup, relationships, and ID resolution.
+- `ajo-author-eligibility-rule`: Profile-schema-backed structured eligibility, audience rules, advanced raw-PQL diagnostics, and persisted-rule verification.
 - `ajo-build-decisioning-experience`: coordinated end-to-end Decisioning build with a late policy commit point.
 - `ajo-manage-expression-fragments`: expression-fragment authoring, publication, and optional item attachment.
 - `ajo-author-email-template`: complete email Content Template authoring and source QA.
@@ -16,7 +17,7 @@ All skills target only the `aepenablementfy21` sandbox. A conflicting sandbox va
 - `ajo-audit-message-readiness`: read-only template, campaign preview, and audience-definition evidence.
 - `ajo-cleanup`: explicit manual-only destructive cleanup.
 
-Shared references define campaign scope resolution, audience reads, email standards, write recovery, and operation receipts.
+Shared references define campaign scope resolution, audience reads, eligibility-rule PQL, email standards, write recovery, and operation receipts.
 
 ## Operating Model
 
@@ -25,7 +26,7 @@ Shared references define campaign scope resolution, audience reads, email standa
 - Updates, lifecycle changes, attachments, archives, and deletes use a fresh ETag from the same resource.
 - Create timeouts and unknown asynchronous outcomes stop for reconciliation; non-idempotent operations are never retried blindly.
 - Decision Policies support multiple selection strategies, optional manually pinned items, multiple approved fallback items, and an output count. The current tool requires at least one strategy and one fallback.
-- Eligibility is explicit: unrestricted, a raw-PQL rule using confirmed XDM fields, or an audience-backed rule using exact AEP system IDs and AND/OR. Rule creation and item/strategy attachment are separate approved writes, each followed by an exact read.
+- Eligibility is explicit: unrestricted, an existing rule, schema-backed `eligibilityAst`, exact audience membership, or advanced raw PQL. The Profile schema tools are distinct from Offer Item schema inspection. Validation and verification separate schema, audience, persistence, visual-model, attachment, and profile-simulation evidence. Rule creation and attachment are separate approved writes.
 - A Journey is discovery context. Policy writes use one exact DRAFT Action campaign message scope returned by `ajo_campaign_resolve_scope`.
 - The plugin never stores Adobe credentials.
 
