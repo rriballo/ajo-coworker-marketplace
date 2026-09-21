@@ -16,7 +16,7 @@ Remain read-only. The sandbox is fixed to `aepenablementfy21`; stop on mismatch.
 ## Workflow
 
 1. Call `ajo_get_capabilities`.
-2. Retrieve the exact template and audit it against `../../references/email-template-standard.md`: normalized subject/HTML/text/headers, ETag, source shape, placeholders, marker/generated policy block, links/assets, accessibility, responsive structure, and supplied footer content.
+2. Retrieve the exact template and audit it against `../../references/email-template-standard.md`: normalized subject/HTML/text/headers, ETag, source shape, placeholder inventory, marker/generated policy block, links/assets, accessibility, responsive structure, supplied footer content, and any supplied brand contract. For NORDVELL, always audit the standard text header, reusable body hierarchy, fixed footer, WPP POC attribution, bracket labels, and Adobe-identifier restrictions in `../../references/nordvell-brand-standard.md`; also flag campaign copy inherited from an unrelated brief. Report brand findings separately from legal, qualification, proof, activation, and delivery evidence.
 3. Resolve campaign/Journey evidence according to `../../references/campaign-scope-resolution.md`. Distinguish action nodes from embedded or recovered associations, report the recovery status and candidates, and never claim a positive `actionCount` with zero associations means no action.
 4. If a supported preview is requested, require `simulationPreview.supported`, its non-null `previewCampaignId`, the inbound user token/permission, and one to ten approved test identities. Redact sensitive rendered values.
 5. If audience context is requested, follow `../../references/audience-read-contract.md` and report definitions only.

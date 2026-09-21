@@ -17,8 +17,9 @@ All skills target only the `aepenablementfy21` sandbox. A conflicting sandbox va
 - `ajo-audit-decisioning`: read-only Decisioning dependency/readiness audit.
 - `ajo-audit-message-readiness`: read-only template, campaign preview, and audience-definition evidence.
 - `ajo-cleanup`: explicit manual-only destructive cleanup.
+- `nordvell-brand-guidelines`: standard NORDVELL POC text header, reusable email hierarchy, fixed footer, voice, Decisioning-content boundaries, secondary WPP Enterprise Solution attribution, and explicit bracket placeholders without campaign hardcoding.
 
-Shared references define campaign scope resolution, audience reads, eligibility-rule PQL, email standards, write recovery, and operation receipts.
+Shared references define campaign scope resolution, audience reads, eligibility-rule PQL, email standards, the standard NORDVELL POC presentation shell, write recovery, and operation receipts.
 
 ## Operating Model
 

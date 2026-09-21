@@ -4,12 +4,14 @@
 
 - Use only user-supplied or explicitly approved offer names, values, voucher codes, dates, legal terms, addresses, unsubscribe/privacy URLs, brand claims, and asset URLs.
 - Never invent discounts, expiry dates, legal copy, compliance destinations, or reachable assets.
-- Use labeled placeholders only when the user explicitly authorizes them, and report every unresolved placeholder before save.
+- Use labeled placeholders only when the user explicitly authorizes them, and report every unresolved placeholder before save. NORDVELL POC guidance grants standing authorization for its uppercase square-bracket placeholder convention, subject to its Adobe-identifier restrictions.
 - Treat footer and unsubscribe checks as technical presence checks, not legal approval.
 
 ## Document structure
 
 Create a complete email document with a hidden preheader, branded header, focused hero, two to four varied body blocks, and footer. Body options include card rows, split image/copy sections, voucher cards, CTA bands, an offer-decision block, and supplied social proof.
+
+For NORDVELL content, `nordvell-brand-standard.md` replaces these generic structural choices with its standard text header, reusable body hierarchy, footer, WPP Enterprise Solution POC attribution, and bracket-placeholder convention. The structure is consistent; campaign copy and relevant body modules are authored from the current brief rather than hardcoded.
 
 Use an email-compatible table or hybrid layout, a centered container no wider than 600px, presentation roles on layout tables, inline critical styles, a responsive media query, visible keyboard/touch targets, web-safe fallback fonts, meaningful alt text, dimensions for images, and Outlook fallbacks where needed. Avoid JavaScript, lazy loading, inaccessible image-only messages, and unsupported CSS. These are compatibility defaults, not absolute requirements for metadata elements or media-query styles.
 
