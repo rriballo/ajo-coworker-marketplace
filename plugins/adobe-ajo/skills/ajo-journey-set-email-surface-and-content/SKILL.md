@@ -14,30 +14,26 @@ Configures an Adobe Journey Optimizer journey's email (campaign) node: sets the 
 **surface**, then applies a **content template**. Sandbox is `aepenablementfy21` unless the
 user says otherwise. Every write here mutates a live draft — confirm before each mutation.
 
-## Why the two steps must be chained
+## Reuse the existing journey and draft version
 
-There is no API to edit the exact journey version the UI has open. Each write to the
-journey authoring backend creates a NEW journey **version** on the same container. The
-content-template tool applies to a specific version UID. So:
+Attach the surface and content to the journey already created for this task. Keep its
+container ID, draft version UID, and email node ID throughout this workflow.
 
-- Set the surface and apply the content **against the same new version UID**, back to back,
-  in one pass. Do not set the surface, stop, and later apply content to a stale version —
-  the surface will not be on whatever version you target next.
-- Applying content to a version whose email node has no surface fails with
-  `Inline campaign has no email surface`, and the rendered email shows
-  **"Channel configuration not selected"**.
-- After finishing, hand the user the URL of the FINAL version you wrote (not the original),
-  and tell them to continue editing from that version so the UI doesn't diverge again.
+- Do not create, clone, rebuild, or POST a new journey or journey version to set a surface.
+- Use the exact draft version ID supplied by the user or returned by the preceding journey
+  creation step. Never select a journey by name alone; ask if the target is ambiguous.
+- Set the surface and apply the content against that same existing draft version.
+- If the requested surface is already set, skip the surface mutation.
+- If available tools cannot update the surface in place, stop and report the limitation.
+  Ask the user to set the surface on that same draft in the AJO UI, then re-read it before
+  continuing. Do not work around the limitation by creating another version.
 
-## Critical: the surface is not UI-visible until content is applied
+## Verify the surface and provisioned message together
 
-Setting `surfaceId` on the node via the API stores the value but does NOT populate the
-"Email channel configuration" field in the AJO Actions panel, and does NOT make the surface
-selectable/visible in the UI. AJO only renders the surface once an inline **message is
-provisioned** on the node — which happens in Step 4 (applying the content template). So a
-surface-only write always looks "empty" in the UI even though the data persisted. Never
-promise a UI-visible surface without completing Step 4. This is why this skill always does
-both steps; there is no useful "surface-only" outcome.
+An unprovisioned email node may still show "Channel configuration not selected" even when
+`surfaceId` is stored. Applying the template provisions the inline message when needed.
+Verify both the saved surface and the message after binding; an empty UI field alone is
+not a reason to recreate the journey or its version.
 
 ## Inputs to gather
 
@@ -51,7 +47,8 @@ both steps; there is no useful "surface-only" outcome.
 
 Read the journey (`ajo__get_journey` with `id` + `sn`). From `ui.nodes`, find the node with
 `type: "campaign"` (channel `email`). Record: node id, `data.actionUID`, current
-`surfaceId`/`surfaceType`, and the journey container id (`journey` field). Note the current
+`surfaceId`/`surfaceType`, existing `messageId`, version UID, and the journey container id
+(`journey` field). Confirm the target is a draft before proceeding. Note the current
 node's `surfaceType` value — mirror it when you write (the UI uses `"surfaceId"`; older
 saves used `"brandingPresetId"`).
 
@@ -64,48 +61,46 @@ different sandbox.
 
 ## Step 3 — Set the surface (mutation — confirm first)
 
-Present the exact change and get approval. Then POST a new journey version via
-`api_request(service="journey_authoring", path="authoring/journeyVersions", method="POST")`.
-Build the body by reproducing the journey's exact node/edge graph (faithful copy — same node
-IDs, edges, timezone, batchDefinition, keyNamespace, etc.) with the email node's `data`
-carrying:
+If the node already has the requested surface, skip this mutation and continue to Step 4.
 
-```
-"surfaceId": "<surface-uuid>",
-"surfaceType": "surfaceId",           # match the node's current surfaceType
-"channel": "email",
-"channelOverrides": [
-  {"name":"address","expression":{"plainText":"personalEmail.address","parameters":[]},
-   "channel":"email","isDefaultValue": true}
-],
-"trackingOptions": {"clickTrackingEnabled": true}
-```
+Inspect the available tool schema/documentation for a supported update of the existing
+draft version's email node. Do not invent a PUT/PATCH endpoint or assume an operation
+updates in place. If only journey/version creation is available, stop for the UI update
+described above.
 
-Keep the existing `actionUID`; leave `messageId` empty. Include `"journey": "<container-id>"`
-in the body and do NOT include a top-level `uid`. From the response, capture the new
-**version UID** (`createdElement.uid` or `result.uid`) and confirm `surfaceId` persisted on
-the email node.
-
-Node-shape reference (the backend rejects generic types): entry read-audience node is
-`type:"segmentTrigger"` (name/icon `segmentTrigger`); email node is `type:"campaign"`
-(name/icon `campaign`, `data.nodeType:"campaign"`). Do NOT use `readAudience`/`message` —
-they fail `ERR_MODEL_4` and disconnect the graph.
+For a supported in-place update:
+- Re-read the target for a fresh ETag where supported. Present the exact surface change,
+  target IDs, and required confirmation string, then obtain explicit approval.
+- Set `surfaceId` to the verified surface UUID and preserve the node's `surfaceType`
+  convention. Use the verified recipient expression if the operation requires one.
+- Preserve the container ID, version UID, node ID, `actionUID`, existing `messageId`, graph,
+  audience, timing, channel overrides, tracking options, and decisioning references except
+  for fields explicitly required and approved for the surface change.
+- Never clear an existing `messageId` to force reprovisioning.
+- Re-read the same version and verify the surface persisted and all target IDs are unchanged.
+  If the operation unexpectedly returns a different version/container, stop and report it;
+  do not continue binding to the new target.
 
 ## Step 4 — Apply the content template (mutation — confirm first)
 
-Immediately, against the version UID from Step 3, call
+After re-reading the existing draft and obtaining fresh approval for this mutation, call
 `tadforge-bind-template-to-journey-action` with:
-`sandbox`, `journeyVersionId` = the new version UID, `nodeId` = the email node id
+`sandbox`, `journeyVersionId` = the existing draft version UID, `nodeId` = the email node id
 (NOT the actionUID), `templateId`, and `subject`. Success returns `bound: true,
 verified: true` plus a provisioned `messageId`.
 
-If it returns `Inline campaign has no email surface` — even when a prior version already
-shows `surfaceId` on the node — the binding tool does not see a bound surface on the version
-you targeted. Recover by doing Step 3 and Step 4 back-to-back on a FRESH version: re-read the
-current draft, POST a new version with the surface (Step 3), capture its new version UID, then
-immediately call this tool against that new UID. Do not bind against an older version. This
-recovery is expected, not a failure — a surface set on an earlier version often needs to be
-re-applied on the version you actually bind.
+For email, this tool uses the surface stored on the node; its `surfaceId` override is for
+push/SMS and is ignored for email. Do not use that override as an email-surface update.
+
+If it returns `Inline campaign has no email surface`, re-read the same draft version and
+check the sandbox, node ID, surface, and message state. Correct the surface in place using
+Step 3 or request a UI correction on that draft. Obtain fresh approval before retrying.
+Never create a journey or version as recovery. Reconcile timeouts or unknown outcomes
+before retrying any mutation.
+
+After binding, read back the same draft. Verify its container/version/node IDs, requested
+surface, template content, and provisioned message. If a pre-existing message ID or its
+decisioning scope changed unexpectedly, stop and report the discrepancy before further writes.
 
 **"Latest template" caution:** if the user asks for the "latest" template and it resolves to
 an off-brand or `NOT FOR SEND` / placeholder POC template, flag that to the user and confirm
@@ -113,9 +108,10 @@ before binding — it will become the message content.
 
 ## Step 5 — Report
 
-Give the user the Experience Platform URL of the FINAL version (Step 3's version UID):
+Give the user the Experience Platform URL of the existing draft version verified above:
 `https://experience.adobe.com/#/@<org-slug>/sname:<sandbox>/journey-optimizer/journeys/journey/<version_uid>`
-Hyperlink the journey name once. Tell them to continue from THIS version. Flag anything
+Hyperlink the journey name once. Report whether reuse and surface/content verification
+succeeded; only claim success after read-back. Keep the journey in Draft. Flag anything
 still unresolved honestly: empty entry audience → journey still shows
 `Missing identity namespace` / `no valid segment` and isn't publishable; any bracket
 placeholders in the template are still POC values.
@@ -124,6 +120,7 @@ placeholders in the template are still POC values.
 
 - Confirm before every mutation; never retry a non-idempotent POST blindly — reconcile by
   re-reading first.
+- Never create a journey or journey version in this skill, including during error recovery.
 - Never invent surface, template, node, or version IDs. Verify the surface before setting it.
 - Setting the surface + content does not bind offers/Decision Policy, does not resolve the
   entry audience, and is not proof, preview, or delivery.
