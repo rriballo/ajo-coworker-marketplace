@@ -4,7 +4,8 @@
 
 - The only permitted sandbox is `aepenablementfy21`.
 - State this sandbox before a write. If configuration, tool output, or user input indicates another sandbox, stop. Do not offer another sandbox as a choice.
-- Call `ajo_get_capabilities` and verify the applicable Content or Decisioning write gate before planning a mutation.
+- Call `ajo_get_capabilities` and verify the exact gate/capability for the intended mutation. Content, Decisioning, and Campaign authoring gates are independent; one never authorizes another.
+- For Journey/campaign package mutations, stop unless the active MCP advertises a supported in-place operation. Never create or clone a Journey/version as a workaround.
 
 ## Approval contract
 

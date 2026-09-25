@@ -22,6 +22,14 @@ Decision Policy writes target one exact DRAFT Action campaign email message. A J
 
 Never substitute a Journey ID, Journey version ID, node ID, action UID, package ID, message ID, or template ID for a campaign ID or campaign version ID. `journeyVersionId` is metadata only.
 
+## Surface and content preservation
+
+- Surface assignment and template/content binding do not authorize Decision Policy writes.
+- Resolve the exact DRAFT campaign version and email package before either mutation. Record the current package surface, version `modifiedAt`, message IDs, and policy references.
+- Use `ajo_campaign_list_surfaces` and `ajo_campaign_get_surface` before `ajo_campaign_set_package_surface`. The surface mutation targets one exact package only.
+- Re-resolve the same scope after mutation. Any changed campaign/version/package/message identity or Decision Policy reference is a stop condition.
+- If policy create/bind is later requested, pass the complete unchanged `data.scope` to the policy tool under a new approval.
+
 ## Preview
 
 - Use `previewCampaignId` only from `ajo_journey_resolve_campaigns` and only when `simulationPreview.supported` is true.
