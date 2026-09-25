@@ -4,7 +4,7 @@ Creating a Journey is not equivalent to posting a graph. A usable email action r
 
 ## Required capability
 
-Use first-time creation only when the active tool catalog advertises a dedicated Journey creation/provisioning mutation whose schema explicitly creates and returns:
+Use Adobe's native Journey Create skill when it is available and the user has the required permissions. A dedicated Journey creation/provisioning mutation is an alternative only when its schema explicitly creates and returns:
 
 - Root Journey ID and DRAFT Journey version ID.
 - Read Audience/segment-trigger node and exact audience system ID.
@@ -12,9 +12,9 @@ Use first-time creation only when the active tool catalog advertises a dedicated
 - Associated DRAFT campaign version ID.
 - Email package ID and message ID.
 
-`list_journeys`, `get_journey`, channel-configuration reads, action-content reads/writes, and Journey Simulation tools do not satisfy this requirement. They operate on resources that already exist.
+`list_journeys`, `get_journey`, channel-configuration reads, action-content reads/writes, and Journey Simulation tools do not create a Journey. Native Journey Create can create the Journey resource, but its completion result must still be independently validated for public topology and campaign-backed email provisioning.
 
-If no qualifying mutation is advertised, return `external-action-required`. Never substitute a generic API request, raw `authoring/journeyVersions` POST, prose-to-graph reconstruction, or version clone.
+If neither native Journey Create nor a qualifying mutation is available, return `external-action-required`. Never substitute a generic API request, raw `authoring/journeyVersions` POST, prose-to-graph reconstruction, or version clone.
 
 ## Required inputs
 
@@ -30,15 +30,16 @@ Do not invent defaults when the provisioning tool requires a value. Show every c
 
 ## Provisioning contract
 
-1. Call `ajo_get_capabilities` and inspect all active tool schemas.
-2. Confirm one dedicated provisioning mutation has the complete output contract above. Do not infer support from a generic Journey writer.
+1. Confirm native Journey Create availability and permissions. Call `ajo_get_capabilities` for custom validation and downstream tools.
+2. If native creation is unavailable, confirm one dedicated provisioning mutation has the complete output contract above. Do not infer support from a generic Journey writer.
 3. Exact-get the selected audience and namespace evidence before planning.
 4. Search for same-name Journeys. A name collision is not permission to reuse, overwrite, or create a suffixed duplicate.
-5. Build the exact creation manifest and obtain fresh approval for the provisioning mutation.
-6. Invoke the mutation once. Never retry automatically after a timeout, 5xx, malformed response, or lost connection.
+5. Build the exact creation manifest and obtain fresh approval for the native Journey Create plan or provisioning mutation.
+6. Invoke the supported creation path once. Never retry automatically after a timeout, 5xx, malformed response, or lost connection.
 7. Record every returned identity immediately.
-8. Call `get_journey` and the custom MCP Journey/campaign resolvers. Require one exact DRAFT association with the returned campaign version, package, and message.
-9. Stop if identities are missing, ambiguous, inconsistent, or point outside the fixed sandbox.
+8. Call `get_journey`, then `ajo_journey_validate_structure`. Require public graph connectivity while recognizing that this does not validate Adobe private canvas/authoring state or hidden event configuration.
+9. Require each requested email action to be `package-message-provisioned`. A composite campaign ID without a campaign version, package, and message is a placeholder, not usable scope.
+10. Call `ajo_journey_resolve_campaigns`, select only an action with `scopeUsable=true`, and call `ajo_campaign_resolve_scope`. Stop if identities are missing, ambiguous, inconsistent, or point outside the fixed sandbox.
 
 ## Post-provisioning handoffs
 
@@ -55,9 +56,10 @@ Each handoff invalidates prior mutation approval.
 ## Recovery
 
 - On an unknown creation outcome, mark `outcome-unknown` and reconcile with exact Journey and campaign reads. Do not create another container or version.
-- If Journey exists but campaign/package/message provisioning is incomplete, stop. Do not repair it with guessed IDs or raw graph updates.
+- If the public graph is disconnected or AJO private-authoring alerts remain, stop. Do not repair it with guessed edges, IDs, or raw graph updates.
+- If Journey exists but campaign/package/message provisioning is incomplete, stop. Do not treat an embedded campaign ID as successful provisioning.
 - If post-provisioning surface, content, or Decisioning work fails, preserve the verified identity chain and resume only the failed downstream stage.
 
 ## Evidence boundary
 
-Successful creation requires both the mutation receipt and exact post-reads. A Journey container alone, a graph node alone, or an action UID without campaign version/package/message IDs is incomplete provisioning.
+Successful creation requires the native/dedicated creation receipt plus exact post-reads. `ajo_journey_validate_structure` must report connected public topology and complete campaign-backed email provisioning before downstream work. A Journey container alone, a graph node alone, a bare campaign ID, or an action UID without campaign version/package/message IDs is incomplete provisioning. Public connectivity still does not prove private canvas validity, event usability, simulation, content, proofing, or delivery.

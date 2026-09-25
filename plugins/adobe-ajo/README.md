@@ -17,7 +17,7 @@ All skills target only the `aepenablementfy21` sandbox. A conflicting sandbox va
 - `ajo-audit-decisioning`: read-only Decisioning dependency/readiness audit.
 - `ajo-audit-message-readiness`: read-only template, campaign preview, and audience-definition evidence.
 - `ajo-cleanup`: explicit manual-only destructive cleanup.
-- `ajo-journey-create-and-provision`: first-time Read Audience Journey and campaign-backed email action orchestration, only when a dedicated provisioning mutation is advertised.
+- `ajo-journey-create-and-provision`: native Journey Create orchestration plus independent public-topology and campaign-backed email provisioning validation.
 - `ajo-journey-set-email-surface-and-content`: assign one verified email branding surface to one exact existing DRAFT package and optionally apply content under a separate approval.
 - `nordvell-brand-guidelines`: standard NORDVELL POC text header, reusable email hierarchy, fixed footer, voice, Decisioning-content boundaries, secondary WPP Enterprise Solution attribution, and explicit bracket placeholders without campaign hardcoding.
 
@@ -33,12 +33,12 @@ Shared references define campaign scope resolution, audience reads, eligibility-
 - Eligibility is explicit: unrestricted, an existing rule, schema-backed `eligibilityAst`, exact audience membership, or advanced raw PQL. The Profile schema tools are distinct from Offer Item schema inspection. Validation and verification separate schema, audience, persistence, visual-model, attachment, and profile-simulation evidence. Rule creation and attachment are separate approved writes.
 - A Journey is discovery context. Policy writes use one exact DRAFT Action campaign message scope returned by `ajo_campaign_resolve_scope`.
 - Email package surface assignment uses exact surface list/get evidence and a separate Campaign authoring gate. Surface and template binding are separate mutations with separate approvals; neither authorizes policy work.
-- First-time Journey creation requires a dedicated provisioning mutation that returns the complete Journey/action/campaign/package/message identity chain. Journey reads, action-content tools, and simulation tools are post-provisioning capabilities, not substitutes for creation.
+- First-time Journey creation uses Adobe's native Journey Create skill when available. Before downstream work, `ajo_journey_validate_structure` must independently confirm public graph connectivity and complete campaign version/package/message provisioning. Public connectivity does not validate private canvas state or event usability.
 - The plugin never stores Adobe credentials.
 
 ## Product Boundaries
 
-The MCP manages supported Content Library and Decisioning resources, resolves Action campaign message scope, assigns an existing email branding surface to one exact DRAFT package, creates Decision Policies, and binds placements. First-time Journey/email provisioning is permitted only when a dedicated active tool explicitly provides the complete identity chain; otherwise it is external. AJO action-content tools can read or fully replace supported existing classic inline messages, and AJO simulation tools operate only on existing Journey versions. Channel-configuration creation, Open Message v2 content replacement, proofing, publishing, and activation remain outside this workflow.
+The MCP manages supported Content Library and Decisioning resources, validates saved public Journey topology and email provisioning, resolves Action campaign message scope, assigns an existing email branding surface to one exact DRAFT package, creates Decision Policies, and binds placements. Adobe's native Journey Create skill can create the Journey, but downstream work is blocked until the custom validator and exact campaign scope reads confirm the full identity chain. AJO action-content tools can read or fully replace supported existing classic inline messages, and AJO simulation tools operate only on existing Journey versions. Channel-configuration creation, Open Message v2 content replacement, proofing, publishing, and activation remain outside this workflow.
 
 ## Connection
 

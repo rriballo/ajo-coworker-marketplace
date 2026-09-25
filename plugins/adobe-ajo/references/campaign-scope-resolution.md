@@ -12,13 +12,14 @@ Decision Policy writes target one exact DRAFT Action campaign email message. A J
 ## Journey-only discovery
 
 1. Call `ajo_journey_resolve_campaigns` with the root Journey ID.
-2. `actionCount` counts campaign action nodes. `associationCount` counts embedded plus deterministically recovered associations.
-3. When Adobe omits embedded metadata, the resolver automatically queries Campaign Service with exact `metadata.sourceVersionId`. It correlates exact `metadata.sourceActionId` to action UID or node ID; it uses singleton fallback only when one compatible unresolved action and one candidate remain.
-4. Inspect `recovery`, `actions`, `campaigns`, and `selectionRequired`. A positive `actionCount` with zero associations means no exact recovery was possible, not that no action exists.
-5. If recovery is ambiguous, narrow with an exact `nodeId`, `actionUid`, `campaignId`, or select an exact returned campaign version. Never choose by name, channel, order, or draft status alone.
-6. Ask the user for the Action `campaignVersionId` only after recovery has no match or remains unresolved. If supplied, resolve it directly.
-7. Pass the selected `campaignVersionId` to `ajo_campaign_resolve_scope`.
-8. Pass the returned `data.scope` unchanged to Decision Policy create and bind tools. For Journey-inline email actions, `scope.campaignId` can be a composite string; it is valid scope metadata but must not be used as a root campaign lookup or Simulation ID.
+2. For a newly created Journey, call `ajo_journey_validate_structure` first. Require connected public topology and complete campaign-backed email provisioning; inspect limitations because this does not validate private canvas state.
+3. `actionCount` counts campaign action nodes. `associationCount` requires an embedded or recovered campaign version. `provisionedActionCount` requires package/message identities. A bare embedded campaign ID is an incomplete placeholder.
+4. When Adobe omits usable metadata, the resolver automatically queries Campaign Service with exact `metadata.sourceVersionId`. It correlates exact `metadata.sourceActionId` to action UID or node ID; it uses singleton fallback only when one compatible unresolved action and one candidate remain.
+5. Inspect `recovery`, `actions`, `provisioningState`, `scopeUsable`, `campaigns`, and `selectionRequired`. Action presence does not prove provisioning.
+6. If recovery is ambiguous, narrow with an exact `nodeId`, `actionUid`, `campaignId`, or select an exact returned campaign version. Never choose by name, channel, order, or draft status alone.
+7. Ask the user for the Action `campaignVersionId` only after recovery has no match or remains unresolved. If supplied, resolve it directly.
+8. Pass only an action with `scopeUsable=true` and its selected `campaignVersionId` to `ajo_campaign_resolve_scope`.
+9. Pass the returned `data.scope` unchanged to Decision Policy create and bind tools. For Journey-inline email actions, `scope.campaignId` can be a composite string; it is valid scope metadata but must not be used as a root campaign lookup or Simulation ID.
 
 Never substitute a Journey ID, Journey version ID, node ID, action UID, package ID, message ID, or template ID for a campaign ID or campaign version ID. `journeyVersionId` is metadata only.
 
