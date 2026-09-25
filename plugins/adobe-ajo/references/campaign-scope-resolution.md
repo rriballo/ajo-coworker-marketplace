@@ -22,6 +22,13 @@ Decision Policy writes target one exact DRAFT Action campaign email message. A J
 
 Never substitute a Journey ID, Journey version ID, node ID, action UID, package ID, message ID, or template ID for a campaign ID or campaign version ID. `journeyVersionId` is metadata only.
 
+## Newly provisioned actions
+
+- A creation receipt is incomplete until it contains Journey root/version, action node/action UID, DRAFT campaign version, package, and message IDs.
+- Exact-read the Journey with `get_journey`, then call `ajo_journey_resolve_campaigns` and `ajo_campaign_resolve_scope` before surface, content, or Decision Policy work.
+- Require all returned identities to match the provisioning receipt. Never manufacture a campaign association from the Journey graph.
+- If any identity is missing or inconsistent, stop; do not create another Journey/version or guess cross-service IDs.
+
 ## Surface and content preservation
 
 - Surface assignment and template/content binding do not authorize Decision Policy writes.

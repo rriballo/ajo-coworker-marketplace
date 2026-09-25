@@ -1,6 +1,6 @@
 ---
 name: ajo-build-decisioning-experience
-description: Plan and execute an end-to-end Adobe Journey Optimizer Decisioning build with fragments, items, rules, collections, formulas, strategies, placements, a campaign-scoped Decision Policy, and an email Content Template. Use for coordinated offer builds. Do not use for isolated item or content changes, read-only audits, cleanup, campaign/Journey creation, proofs, or activation.
+description: Plan and execute an Adobe Journey Optimizer Decisioning build for one existing DRAFT campaign email message, including fragments, items, rules, collections, formulas, strategies, placements, a campaign-scoped Decision Policy, and an email Content Template. Use for coordinated offer builds after message provisioning. Do not use for isolated changes, first-time Journey creation, read-only audits, cleanup, proofs, or activation.
 ---
 
 # Build an AJO Decisioning experience
@@ -8,6 +8,8 @@ description: Plan and execute an end-to-end Adobe Journey Optimizer Decisioning 
 Follow `../../references/write-safety-and-recovery.md`, `../../references/operation-manifest-and-output.md`, and `../../references/campaign-scope-resolution.md`. Delegate detailed fragment and template work to their focused skills.
 
 Use `ajo-manage-decision-item` instead when adding or maintaining an item in an existing collection, strategy, placement, and policy chain. Do not rebuild an established chain for an item-only request.
+
+For a complete request whose Journey/email action does not yet exist, hand off first to `ajo-journey-create-and-provision`. Begin this skill only after it returns an exact DRAFT campaign version/package/message scope.
 
 ## Required inputs
 
@@ -23,7 +25,7 @@ The sandbox is always `aepenablementfy21`. Stop on any mismatch.
 2. Resolve the Decisioning catalog.
 3. Inventory reusable resources with `ajo_decisioning_list_items`, `ajo_decisioning_list_rules`, `ajo_decisioning_list_collections`, `ajo_decisioning_list_ranking_formulas`, `ajo_decisioning_list_strategies`, and `ajo_decisioning_list_placements`, plus relevant Content reads. Follow pagination.
 4. If audience eligibility is needed, follow `../../references/audience-read-contract.md`: list and exact-get every `data.children[].id`, choose explicit AND/OR, and never use names, `audienceId`, or copied stored PQL.
-5. Resolve the exact DRAFT campaign message scope. With only a root Journey ID, require `ajo_journey_resolve_campaigns` to attempt automatic source-metadata recovery, inspect `recovery` and `selectionRequired`, select one exact returned `campaignVersionId`, then call `ajo_campaign_resolve_scope`. Ask the user for a version ID only after recovery has no exact match. Campaign/Journey creation remains external.
+5. Resolve the exact DRAFT campaign message scope. With only a root Journey ID, require `ajo_journey_resolve_campaigns` to attempt automatic source-metadata recovery, inspect `recovery` and `selectionRequired`, select one exact returned `campaignVersionId`, then call `ajo_campaign_resolve_scope`. Ask the user for a version ID only after recovery has no exact match. First-time creation belongs only to `ajo-journey-create-and-provision` when its dedicated capability is advertised.
 6. Create the operation manifest, including deterministic names, semantic reuse comparisons, dependencies, policy composition, scope, and external steps.
 7. Present the ordered plan. Plan approval does not authorize any write.
 

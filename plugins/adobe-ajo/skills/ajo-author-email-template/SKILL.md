@@ -25,6 +25,6 @@ Stop and request missing business, legal, or asset facts. Never fabricate them.
 6. For create, show the exact name, complete HTML/content facts, offer-block mode, risks, and confirmation phrase; obtain approval, create, record the template ID, and re-read it.
 7. For update or policy backfill, call `ajo_content_get_template` immediately before approval, show the old/new normalized content and fresh ETag, obtain approval, update, and re-read.
 8. QA `data.qa.subject`, HTML, text, headers, source shape, ETag, placeholder inventory and labels, marker/policy block, links, assets, accessibility, responsive structure, supplied footer elements, and any supplied brand contract. Reject bracket placeholders used as Adobe identifiers or executable syntax.
-9. Apply the reviewed template in AJO UI only after QA. State that application creates a copy and later Journey-side edits are not represented by the stored template.
+9. After QA, hand off application according to target state: a new Journey goes to `ajo-journey-create-and-provision`; an existing DRAFT goes to `ajo-journey-set-email-surface-and-content`. Use a dedicated binder when advertised, or the read-before-full-replacement `get_action_content`/`update_action_content` flow only for supported classic inline messages. Otherwise require AJO UI. Application creates a copy and later Journey-side edits are not represented by the stored template.
 
 Return a source-QA report and operation receipt. Technical checks are not legal approval, personalized preview, Journey Simulation, proof, or delivery evidence.

@@ -23,7 +23,8 @@ This skill targets one exact existing DRAFT campaign version and one exact email
 
 ## Do not use when
 
-- The request is to create a Journey, campaign, version, or channel configuration.
+- The request is to create a Journey or first provision its campaign-backed email action; hand off to `ajo-journey-create-and-provision` and require its dedicated capability.
+- The request is to create a channel configuration.
 - The target is LIVE, published, ambiguous, or outside the fixed sandbox.
 - The only available operation would recreate or clone the Journey/version.
 - The request is to create/bind a Decision Policy, send a proof, simulate a Journey path, or activate.
@@ -70,15 +71,16 @@ The mutation changes only the package surface. It does not apply a template, pro
 Content work requires a new approval after a fresh target read. Surface approval never authorizes content binding.
 
 1. Verify the exact stored Content Template and its source QA evidence before applying it.
-2. Call `tadforge-bind-template-to-journey-action` only when that deployment-specific tool is advertised. Use:
+2. Prefer an advertised dedicated template-binding operation such as `tadforge-bind-template-to-journey-action`. Use:
    - `sandbox: aepenablementfy21`
    - `journeyVersionId`: existing draft version UID
    - `nodeId`: email node ID, never `actionUID`
    - `templateId`
    - required subject when applicable
 3. For email, do not use a push/SMS `surfaceId` override as a surface mutation.
-4. Re-read the same draft and verify the surface and provisioned `messageId`. Do not claim copied inline HTML was inspected unless an advertised capability returns it; final copied-message validation remains in AJO UI.
-5. If an existing message ID or Decision Policy scope changed unexpectedly, stop before further writes.
+4. When no dedicated binder exists but the action is a supported classic inline message, call `get_action_content` before approval, construct the complete replacement from the reviewed template, obtain separate approval, call `update_action_content` once, and exact-read afterward. This is full replacement with last-writer-wins semantics, not a patch. Do not use it for Open Message v2.
+5. Re-read the same draft and verify the surface and provisioned `messageId`. Use `get_action_content` for copied-message evidence when supported; otherwise final copied-message validation remains in AJO UI.
+6. If an existing message ID or Decision Policy scope changed unexpectedly, stop before further writes.
 
 ## Decisioning preservation
 

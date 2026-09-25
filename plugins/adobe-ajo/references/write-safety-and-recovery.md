@@ -5,7 +5,8 @@
 - The only permitted sandbox is `aepenablementfy21`.
 - State this sandbox before a write. If configuration, tool output, or user input indicates another sandbox, stop. Do not offer another sandbox as a choice.
 - Call `ajo_get_capabilities` and verify the exact gate/capability for the intended mutation. Content, Decisioning, and Campaign authoring gates are independent; one never authorizes another.
-- For Journey/campaign package mutations, stop unless the active MCP advertises a supported in-place operation. Never create or clone a Journey/version as a workaround.
+- For Journey/campaign package mutations, stop unless the active MCP advertises a supported in-place operation. Never create or clone a Journey/version as a repair workaround.
+- First-time Journey creation is allowed only through `ajo-journey-create-and-provision` and a dedicated mutation that provisions the complete Journey/action/campaign/package/message identity chain. Never use a raw API request, generic graph writer, direct `authoring/journeyVersions` POST, or version clone.
 
 ## Approval contract
 

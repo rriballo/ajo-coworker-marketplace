@@ -2,7 +2,7 @@
 
 CX Coworker marketplace for the Adobe Journey Optimizer MCP integration.
 
-Version 2 separates fragment and email authoring, adds message-readiness auditing, enforces the fixed `aepenablementfy21` sandbox, and introduces shared write-recovery and campaign-scope contracts.
+Version 2.3 adds safe routing for first-time Journey/email provisioning, separates creation from existing-DRAFT surface/content work, and integrates AJO Journey, action-content, channel-configuration, and simulation capabilities without permitting raw graph-builder fallbacks.
 
 ## Configuration
 

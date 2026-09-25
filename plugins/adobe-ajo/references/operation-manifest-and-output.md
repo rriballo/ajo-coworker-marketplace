@@ -7,6 +7,7 @@ Create a manifest before the first mutation and update it after every operation.
 - Fixed sandbox: `aepenablementfy21`.
 - Business objective and supplied facts.
 - Target campaign/Journey identifiers and exact DRAFT message scope when applicable.
+- For first-time Journey provisioning: root Journey ID, DRAFT Journey version, entry node, email node/action UID, campaign version, package, message, and optional surface IDs, with creation and post-read evidence recorded separately.
 - Proposed resources with deterministic names, operation type, normalized configuration, dependencies, lifecycle target, and reuse decision.
 - Decision Policy inputs: output count, all selection strategy IDs, optional manual item IDs, all approved fallback item IDs, placement name, and exact scope.
 - Required approvals, external AJO steps, and unresolved placeholders.

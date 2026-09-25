@@ -27,4 +27,6 @@ description: Read-only inventory, lookup, and relationship discovery for Adobe J
 
 Stop on sandbox mismatch, unresolved recovery ambiguity, incomplete pagination, or conflicting IDs. Do not stop merely because embedded campaign metadata is unavailable; `ajo_journey_resolve_campaigns` must attempt exact Campaign Service recovery first. Return a concise inventory and recommend the next read or destination skill.
 
+If the requested Journey/email action does not exist, route first-time creation to `ajo-journey-create-and-provision`. Discovery must not call generic Journey graph writers or raw authoring endpoints.
+
 Do not create, update, publish, approve, archive, bind, or delete. Discovery approval never authorizes a later mutation; the destination skill must preflight and request fresh approval.

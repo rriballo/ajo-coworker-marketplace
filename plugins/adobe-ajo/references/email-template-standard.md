@@ -24,4 +24,4 @@ Use an email-compatible table or hybrid layout, a centered container no wider th
 
 ## Source QA boundary
 
-Record the template ID and call `ajo_content_get_template`. Audit `data.qa.subject`, `html`, `text`, `headers`, `sourceShape`, marker/policy block, and ETag. Applying a Content Template in AJO creates a copy; later Journey-message edits do not update the stored template and require separate UI validation or a newly saved template version.
+Record the template ID and call `ajo_content_get_template`. Audit `data.qa.subject`, `html`, `text`, `headers`, `sourceShape`, marker/policy block, and ETag. For a new target, hand off to `ajo-journey-create-and-provision`; for an existing DRAFT, hand off to `ajo-journey-set-email-surface-and-content`. A dedicated binder or supported classic-inline `get_action_content`/`update_action_content` workflow may apply a reviewed copy; otherwise use AJO UI. Later message edits never update the stored template.
